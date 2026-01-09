@@ -5,16 +5,16 @@
 <form method="post" class="row g-3">
   <div class="col-md-6">
     <label class="form-label">URL</label>
-    <input type="text" name="url" class="form-control" value="{{ article['url'] }}">
+    <input type="text" name="url" class="form-control" value="{{ article['url'] }}" required>
   </div>
 
   <div class="col-md-6">
     <label class="form-label">Τίτλος</label>
-    <input type="text" name="title" class="form-control" value="{{ article['title'] }}">
+    <input type="text" name="title" class="form-control" value="{{ article['title'] }}" required>
   </div>
 
   <div class="col-md-4">
-    <label class="form-label">Ημερομηνία</label>
+    <label class="form-label">Ημερομηνία / Ώρα</label>
     <input type="text" name="published_at" class="form-control" value="{{ article['published_at'] }}">
   </div>
 
@@ -23,7 +23,13 @@
     <input type="text" name="category" class="form-control" value="{{ article['category'] }}">
   </div>
 
+  <!-- ΝΕΟ ΠΕΔΙΟ SOURCE -->
   <div class="col-md-4">
+    <label class="form-label">Πηγή</label>
+    <input type="text" name="source" class="form-control" value="{{ article['source'] }}">
+  </div>
+
+  <div class="col-md-6">
     <label class="form-label">Εικόνα (URL)</label>
     <input type="text" name="image_url" class="form-control" value="{{ article['image_url'] }}">
   </div>
@@ -40,11 +46,11 @@
 
   <div class="col-12">
     <label class="form-label">HTML Περιεχόμενο</label>
-    <textarea name="html_content" class="form-control" rows="5">{{ article['html_content'] }}</textarea>
+    <textarea name="html_content" class="form-control" rows="6">{{ article['html_content'] }}</textarea>
   </div>
 
   <div class="col-12">
-    <button type="submit" class="btn btn-warning">Αποθήκευση Αλλαγών</button>
+    <button type="submit" class="btn btn-warning">💾 Αποθήκευση Αλλαγών</button>
     <a href="{{ url_for('admin') }}" class="btn btn-secondary">Ακύρωση</a>
   </div>
 </form>

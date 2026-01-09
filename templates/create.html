@@ -5,17 +5,17 @@
 <form method="post" class="row g-3">
   <div class="col-md-6">
     <label class="form-label">URL</label>
-    <input type="text" name="url" class="form-control">
+    <input type="text" name="url" class="form-control" required>
   </div>
 
   <div class="col-md-6">
     <label class="form-label">Τίτλος</label>
-    <input type="text" name="title" class="form-control">
+    <input type="text" name="title" class="form-control" required>
   </div>
 
   <div class="col-md-4">
-    <label class="form-label">Ημερομηνία</label>
-    <input type="text" name="published_at" class="form-control">
+    <label class="form-label">Ημερομηνία / Ώρα</label>
+    <input type="text" name="published_at" class="form-control" placeholder="2025-01-01T12:00">
   </div>
 
   <div class="col-md-4">
@@ -23,7 +23,13 @@
     <input type="text" name="category" class="form-control">
   </div>
 
+  <!-- ΝΕΟ ΠΕΔΙΟ SOURCE -->
   <div class="col-md-4">
+    <label class="form-label">Πηγή</label>
+    <input type="text" name="source" class="form-control" placeholder="naftemporiki / kathimerini">
+  </div>
+
+  <div class="col-md-6">
     <label class="form-label">Εικόνα (URL)</label>
     <input type="text" name="image_url" class="form-control">
   </div>
@@ -35,16 +41,16 @@
 
   <div class="col-12">
     <label class="form-label">Tags (χωρισμένα με κόμμα)</label>
-    <input type="text" name="tags" class="form-control">
+    <input type="text" name="tags" class="form-control" placeholder="οικονομία, πολιτική, διεθνή">
   </div>
 
   <div class="col-12">
     <label class="form-label">HTML Περιεχόμενο</label>
-    <textarea name="html_content" class="form-control" rows="5"></textarea>
+    <textarea name="html_content" class="form-control" rows="6"></textarea>
   </div>
 
   <div class="col-12">
-    <button type="submit" class="btn btn-success">Αποθήκευση</button>
+    <button type="submit" class="btn btn-success">💾 Αποθήκευση</button>
     <a href="{{ url_for('admin') }}" class="btn btn-secondary">Ακύρωση</a>
   </div>
 </form>

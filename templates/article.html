@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-3">
+  <a href="{{ url_for('home') }}" class="btn btn-sm btn-outline-secondary">← Πίσω</a>
+</div>
+
+<h2 class="mb-2">{{ a['title'] }}</h2>
+<div class="text-muted mb-3">
+  {{ a['published_at'] or '' }}
+  {% if a['source'] %} | {{ a['source'] }}{% endif %}
+  {% if a['category'] %} | {{ a['category'] }}{% endif %}
+</div>
+
+{% if a['image_url'] %}
+  <img src="{{ a['image_url'] }}" class="img-fluid rounded mb-3" alt="image">
+{% endif %}
+
+{% if a['summary'] %}
+  <p class="lead">{{ a['summary'] }}</p>
+{% endif %}
+
+{% if a['tags'] %}
+  <div class="mb-3">
+    <span class="badge bg-secondary">Tags</span>
+    {% for t in a['tags'] %}
+      <span class="badge bg-light text-dark border">{{ t }}</span>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<hr>
+
+<div class="mb-3">
+  {{ a['html_content'] | safe }}
+</div>
+
+<div>
+  <a href="{{ a['url'] }}" target="_blank" class="btn btn-primary">Άνοιγμα στο site</a>
+</div>
+{% endblock %}
