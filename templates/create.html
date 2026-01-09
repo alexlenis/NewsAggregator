@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Προσθήκη Άρθρου</h2>
+
+<form method="post" class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label">URL</label>
+    <input type="text" name="url" class="form-control">
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Τίτλος</label>
+    <input type="text" name="title" class="form-control">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Ημερομηνία</label>
+    <input type="text" name="published_at" class="form-control">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Κατηγορία</label>
+    <input type="text" name="category" class="form-control">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Εικόνα (URL)</label>
+    <input type="text" name="image_url" class="form-control">
+  </div>
+
+  <div class="col-12">
+    <label class="form-label">Περίληψη</label>
+    <textarea name="summary" class="form-control" rows="3"></textarea>
+  </div>
+
+  <div class="col-12">
+    <label class="form-label">Tags (χωρισμένα με κόμμα)</label>
+    <input type="text" name="tags" class="form-control">
+  </div>
+
+  <div class="col-12">
+    <label class="form-label">HTML Περιεχόμενο</label>
+    <textarea name="html_content" class="form-control" rows="5"></textarea>
+  </div>
+
+  <div class="col-12">
+    <button type="submit" class="btn btn-success">Αποθήκευση</button>
+    <a href="{{ url_for('admin') }}" class="btn btn-secondary">Ακύρωση</a>
+  </div>
+</form>
+{% endblock %}

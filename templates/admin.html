@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Πίνακας Διαχείρισης</h2>
+
+<div class="mb-3">
+  <a href="{{ url_for('create_article') }}" class="btn btn-success">➕ Νέο Άρθρο</a>
+  <a href="{{ url_for('run_scraper', source='naftemporiki') }}" class="btn btn-primary">Scrape Ναυτεμπορική</a>
+  <a href="{{ url_for('run_scraper', source='kathimerini') }}" class="btn btn-primary">Scrape Καθημερινή</a>
+  <a href="{{ url_for('run_scraper', source='all') }}" class="btn btn-primary">Scrape Όλα</a>
+</div>
+
+<table class="table table-striped table-bordered align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Τίτλος</th>
+      <th>Ημερομηνία</th>
+      <th>Κατηγορία</th>
+      <th>Ενέργειες</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in articles %}
+    <tr>
+      <td style="max-width: 300px; word-wrap: break-word;">{{ a['title'] }}</td>
+      <td>{{ a['published_at'] }}</td>
+      <td>{{ a['category'] or '-' }}</td>
+      <td>
+        <a href="{{ url_for('update_article', id=a['_id']) }}" class="btn btn-sm btn-warning">✏️ Επεξεργασία</a>
+        <a href="{{ url_for('delete_article', id=a['_id']) }}" class="btn btn-sm btn-danger"
+           onclick="return confirm('Σίγουρα να διαγραφεί;')">🗑️ Διαγραφή</a>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="4" class="text-center">Δεν υπάρχουν άρθρα στη βάση.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

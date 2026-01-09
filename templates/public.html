@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Τελευταία Νέα</h2>
+
+<form method="get" class="mb-3">
+  <div class="row g-2">
+    <div class="col-md-4">
+      <input type="text" name="category" class="form-control" placeholder="Φίλτρο κατηγορίας" value="{{ request.args.get('category','') }}">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary">Φίλτρο</button>
+    </div>
+  </div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for an in articles %}
+  <div class="col">
+    <div class="card h-100">
+      {% if an['image_url'] %}
+      <img src="{{ an['image_url'] }}" class="card-img-top" alt="Εικόνα άρθρου">
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="{{ an['url'] }}" target="_blank" class="text-decoration-none">{{ an['title'] }}</a>
+        </h5>
+        {% if an['summary'] %}
+          <p class="card-text">{{ an['summary'] }}</p>
+        {% endif %}
+      </div>
+      <div class="card-footer text-muted">
+        {{ an['published_at'] }}
+        {% if an['category'] %} | {{ an['category'] }}{% endif %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p>Δεν υπάρχουν άρθρα στη βάση.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}
+
