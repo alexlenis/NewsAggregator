@@ -42,11 +42,12 @@
   <tbody>
     {% for a in articles %}
     <tr>
-      <td style="max-width: 360px; word-wrap: break-word;">{{ a['title'] }}</td>
+      <td style="max-width:360px;word-wrap:break-word">{{ a['title'] }}</td>
       <td>{{ a['published_at'] }}</td>
       <td>{{ a['category'] or '-' }}</td>
       <td>{{ a['source'] or '-' }}</td>
       <td>
+        <a href="{{ url_for('view_article', id=a['_id']) }}" class="btn btn-sm btn-info">👁️ Προβολή</a>
         <a href="{{ url_for('update_article', id=a['_id']) }}" class="btn btn-sm btn-warning">✏️ Επεξεργασία</a>
         <a href="{{ url_for('delete_article', id=a['_id']) }}" class="btn btn-sm btn-danger"
            onclick="return confirm('Σίγουρα να διαγραφεί;')">🗑️ Διαγραφή</a>

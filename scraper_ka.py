@@ -1,10 +1,13 @@
 import argparse
 import time
 import logging
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urldefrag
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 from dateutil import parser as dateparser
+
 from mongo import MongoDB
 
 BASE = "https://www.kathimerini.gr"
@@ -15,7 +18,27 @@ logger = logging.getLogger("kathimerini")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-def get_soup(url, session):
+def make_session() -> requests.Session:
+    """
+    Session με retries για transient errors (429/5xx).
+    """
+    session = requests.Session()
+    retry = Retry(
+        total=3,
+        connect=3,
+        read=3,
+        backoff_factor=0.5,
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=("GET",),
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
+
+
+def get_soup(url: str, session: requests.Session):
     try:
         r = session.get(url, headers=HEADERS, timeout=15)
         r.raise_for_status()
@@ -25,19 +48,41 @@ def get_soup(url, session):
         return None
 
 
-def extract_links(soup):
+def extract_links(soup: BeautifulSoup):
+    """
+    Παίρνει links από listings. Κρατάμε set για uniqueness.
+    """
     links = set()
     for art in soup.find_all("article"):
         a = art.find("a", href=True)
-        if a:
-            links.add(urljoin(BASE, a["href"]))
+        if not a:
+            continue
+        href = a["href"]
+        full = urljoin(BASE, href)
+        full, _ = urldefrag(full)  # ✅ remove #fragment
+        links.add(full)
     return list(links)
 
 
-def parse_article(url, session):
+def canonicalize_url(soup: BeautifulSoup, fallback_url: str) -> str:
+    """
+    Αν υπάρχει canonical, το χρησιμοποιούμε για dedup.
+    """
+    canon = soup.find("link", rel="canonical", href=True)
+    if canon and canon.get("href"):
+        u = urljoin(BASE, canon["href"])
+        u, _ = urldefrag(u)
+        return u
+    return fallback_url
+
+
+def parse_article(url: str, session: requests.Session):
     soup = get_soup(url, session)
     if not soup:
         return None
+
+    # canonical url (βοηθά dedup)
+    url = canonicalize_url(soup, url)
 
     title = soup.find("meta", property="og:title")
     title = title["content"].strip() if title and title.get("content") else None
@@ -64,9 +109,13 @@ def parse_article(url, session):
             t = a.get_text(strip=True)
             if t:
                 tags.append(t)
+    else:
+        logger.info(f"No tags found for: {url}")
 
     body = soup.find("div", class_="entry-content")
     html_content = str(body) if body else None
+    if not html_content:
+        logger.info(f"No body content found for: {url}")
 
     return {
         "source": "kathimerini",
@@ -81,8 +130,8 @@ def parse_article(url, session):
     }
 
 
-def crawl(pages=1, delay=1.0):
-    session = requests.Session()
+def crawl(pages: int = 1, delay: float = 1.0):
+    session = make_session()
     db = MongoDB()
     added = 0
 
@@ -93,12 +142,24 @@ def crawl(pages=1, delay=1.0):
             continue
 
         links = extract_links(soup)
+        logger.info(f"Listing page {page}: {len(links)} links found")
+
         for link in links:
+            # ✅ link already defragged in extract_links, but safe to do again:
+            link, _ = urldefrag(link)
+
             if db.get_by_url(link):
                 continue
 
             article = parse_article(link, session)
-            if article and article.get("url") and article.get("title"):
+            if not article:
+                continue
+
+            # Αν canonical URL διαφορετικό, ξανα-τσέκαρε dedup
+            if article.get("url") and db.get_by_url(article["url"]):
+                continue
+
+            if article.get("url") and article.get("title"):
                 if db.insert_article(article):
                     added += 1
                     logger.info(f"Inserted: {article['title']}")
@@ -112,4 +173,5 @@ if __name__ == "__main__":
     parser.add_argument("--pages", type=int, default=1)
     parser.add_argument("--delay", type=float, default=1.0)
     args = parser.parse_args()
+
     crawl(pages=args.pages, delay=args.delay)

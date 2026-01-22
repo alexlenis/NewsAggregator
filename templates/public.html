@@ -5,14 +5,15 @@
 <form method="get" class="mb-3">
   <div class="row g-2">
     <div class="col-md-3">
-      <input type="text" name="q" class="form-control" placeholder="Αναζήτηση..." value="{{ request.args.get('q','') }}">
+      <input type="text" name="q" class="form-control" placeholder="Αναζήτηση..."
+             value="{{ request.args.get('q','') }}">
     </div>
 
     <div class="col-md-3">
       <select name="source" class="form-select">
         <option value="">Όλες οι πηγές</option>
         {% for s in sources %}
-          <option> value="{{ s }}" {% if request.args.get('source') == s %}selected{% endif %}>{{ s }}</option>
+          <option value="{{ s }}" {% if request.args.get('source') == s %}selected{% endif %}>{{ s }}</option>
         {% endfor %}
       </select>
     </div>
@@ -21,17 +22,18 @@
       <select name="category" class="form-select">
         <option value="">Όλες οι κατηγορίες</option>
         {% for c in categories %}
-          <option> value="{{ c }}" {% if request.args.get('category') == c %}selected{% endif %}>{{ c }}</option>
+          <option value="{{ c }}" {% if request.args.get('category') == c %}selected{% endif %}>{{ c }}</option>
         {% endfor %}
       </select>
     </div>
 
     <div class="col-md-2">
-      <input type="text" name="tag" class="form-control" placeholder="Tag..." value="{{ request.args.get('tag','') }}">
+      <input type="text" name="tag" class="form-control" placeholder="Tag..."
+             value="{{ request.args.get('tag','') }}">
     </div>
 
     <div class="col-md-1 d-grid">
-      <button type="submit" class="btn btn-primary">OK</button>
+      <button class="btn btn-primary">OK</button>
     </div>
   </div>
 </form>
@@ -41,30 +43,30 @@
   <div class="col">
     <div class="card h-100">
       {% if an['image_url'] %}
-      <img src="{{ an['image_url'] }}" class="card-img-top" alt="Εικόνα άρθρου">
+      <img src="{{ an['image_url'] }}" class="card-img-top">
       {% endif %}
       <div class="card-body">
         <h5 class="card-title">
-          <a href="{{ url_for('view_article', id=an['_id']) }}" class="text-decoration-none">{{ an['title'] }}</a>
+          <a href="{{ url_for('view_article', id=an['_id']) }}" class="text-decoration-none">
+            {{ an['title'] }}
+          </a>
         </h5>
         {% if an['summary'] %}
           <p class="card-text">{{ an['summary'] }}</p>
         {% endif %}
         {% if an['tags'] %}
-          <div class="small text-muted">
-            Tags: {{ an['tags'] | join(', ') }}
-          </div>
+          <div class="small text-muted">Tags: {{ an['tags'] | join(', ') }}</div>
         {% endif %}
       </div>
-      <div class="card-footer text-muted small">
-        {{ an['published_at'] or '' }}
+      <div class="card-footer small text-muted">
+        {{ an['published_at'] }}
         {% if an['source'] %} | {{ an['source'] }}{% endif %}
         {% if an['category'] %} | {{ an['category'] }}{% endif %}
       </div>
     </div>
   </div>
   {% else %}
-  <p>Δεν υπάρχουν άρθρα στη βάση.</p>
+  <p>Δεν υπάρχουν άρθρα.</p>
   {% endfor %}
 </div>
 {% endblock %}
